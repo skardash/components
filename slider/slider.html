@@ -1,0 +1,150 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Output on the thumb</title>
+    <!-- <meta name="description" content="A simple HTML5 Template for new projects.">
+    <meta name="author" content="SitePoint"> -->
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'poppins', sans-serif;
+        }
+
+        :root {
+            --slider_height: 7;
+            --output_font_size: 45;
+            --delta: 2;
+            --thumb_radius: 20;
+
+            --output_height: calc(1.1 * var(--output_font_size));
+            --thumb_width: calc(2 * var(--thumb_radius));
+            --slider_offset: calc(var(--output_height) + var(--delta) + max(var(--thumb_radius) - var(--slider_height)/2, 0));
+            --container_height: calc(2*var(--output_height) + 3*var(--delta) + max(2*var(--thumb_radius), var(--slider_height)));
+            --range_offset_y: calc(var(--slider_offset) + 0.5*var(--slider_height) + max(0.5*var(--slider_height), var(--thumb_radius)) + var(--delta));
+        }
+
+        .slider_container {
+            /* margin-top: 15px; */
+            position: absolute;
+            width: 80%;
+            height: calc(1px * var(--container_height));
+
+            position: absolute;
+            left: 50%;
+            right: 50%;
+            left: 50%;
+            top: 50%;
+            bottom: 50%;
+            right: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .slider {
+            position: absolute;
+            width: 100%;
+            top: calc(1px * var(--slider_offset));
+            -webkit-appearance: none;
+            height: calc(1px * var(--slider_height));
+            border-radius: 5px;
+            background: #b9b0b0;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: calc(1px * var(--thumb_width));
+            height: calc(1px * var(--thumb_width));
+            border-radius: 50%;
+            background: #ffb005;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: calc(1px * var(--thumb_width));
+            height: calc(1px * var(--thumb_width));
+            border-radius: 50%;
+            background: #ffb005;
+            cursor: pointer;
+        }
+
+        .out {
+            position: absolute;
+            font-size: calc(1px * var(--output_font_size));
+            height: calc(1px * var(--output_height));
+            /* top: -100px; */
+        }
+
+        #min_val {
+            font-size: calc(1px * var(--output_font_size));
+            position: absolute;
+            top: calc(1px * var(--range_offset_y));
+        }
+
+        #max_val {
+            font-size: calc(1px * var(--output_font_size));
+            position: absolute;
+            top: calc(1px * var(--range_offset_y));
+            right: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slider_container">
+        <input type="range" min="40000" max="1000000" value="70000" class="slider" id="rango"
+            oninput="output_update(this.value)" onkeydown="event.preventDefault()">
+        <output for="rango" id="valor" class="out">80000</output>
+        <output id="min_val">40000</output>
+        <output id="max_val">1000000</output>
+    </div>
+    <script>
+        // slider code
+        var slider = document.getElementById('rango');
+        var output = document.getElementById('valor');
+        output.innerHTML = slider.value;
+
+        function set_output() {
+            output.innerHTML = numberWithCommas(slider.value);
+            document.getElementById("min_val").innerHTML = numberWithCommas(slider.min);
+            document.getElementById("max_val").innerHTML = numberWithCommas(slider.max);
+            var rect = slider.getBoundingClientRect();
+            var outputWidth = output.getBoundingClientRect().width;
+            var thumb_radius = +getComputedStyle(slider).getPropertyValue('--thumb_radius'); //thumb radius
+
+            let xpos = slider.offsetLeft + thumb_radius + (slider.value - slider.min) * (rect.right - rect.left - 2 * thumb_radius) / (slider.max - slider.min) - outputWidth / 2;
+            let ypos = slider.offsetTop - output.clientHeight - thumb_radius;
+            output.style.left = xpos + "px";
+            output.style.top = ypos + "px";
+        }
+
+        function output_update(val) {
+            output.innerHTML = val;
+            set_output();
+        }
+
+        output_update(slider.value);
+        set_output();
+
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+    </script>
+</body>
+
+</html>
